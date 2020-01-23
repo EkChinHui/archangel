@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from random import sample
-#from networkx.algorithms.tournament import hamiltonian_path
+# from networkx.algorithms.tournament import hamiltonian_path
 
 
 def draw_graph(G, labels=None, graph_layout='spring',
@@ -34,7 +34,7 @@ def draw_graph(G, labels=None, graph_layout='spring',
                             font_family=text_font)
 
     # if labels is None:
-        # labels = range(len(graph))
+    #     labels = range(len(graph))
 
     # edge_labels = dict(zip(graph, labels))
     # nx.draw_networkx_edge_labels(G, graph_pos, edge_labels=edge_labels,
@@ -66,8 +66,9 @@ def is_there_definitely_no_hamiltonian_cycle(G):
     nodes = G.nodes()
     for node in nodes:
         # If some node only has one neighbour - NO HAM-CYCLE EXISTS
-        if len(G.neighbors(node)) <= 1:
-            print "Node has <= 1 neighbour: %s" % str(node)
+        print ("Neighbour count: " + str(len(G.__getitem__(node))))
+        if len(G.__getitem__(node)) <= 1:
+            print ("Node has <= 1 neighbour: %s" % str(node))
             return True
 
     return False
@@ -83,23 +84,23 @@ def get_one_full_cycle_from_graph(G):
         cycle_length = len(cycle)
 
         if idx % 10000 == 0:
-            print "Processing cycle: %s with length %s | expecting length %s" % (str(idx), str(cycle_length), str(number_of_nodes))
+            print ("Processing cycle: %s with length %s | expecting length %s" % (str(idx), str(cycle_length), str(number_of_nodes)))
             remaining_nodes = set(nodes).difference(cycle)
-            print "Remaining nodes: %s\n" % str(remaining_nodes)
+            print ("Remaining nodes: %s\n" % str(remaining_nodes))
 
         if cycle_length == number_of_nodes:
-            print "Solution found at cycle %s with length %s" % (str(idx), str(cycle_length))
+            print ("Solution found at cycle %s with length %s" % (str(idx), str(cycle_length)))
             return cycle
 
     return None
 
 def hamilton(G):
     # Start with F - which is a tuple of the graph and the first node (the path so far)
-    F = [(G, [G.nodes()[0]])]
+    F = [(G, [list(G)[0]])]
     n = G.number_of_nodes()
 
-
-
+    maximum_path_reached = 0
+    
     # while we still have elements in F
     while F:
         graph, path = F.pop()
@@ -125,7 +126,9 @@ def hamilton(G):
                 return p
             else:
                 path_length = len(p)
-                print "Path length (progress): " + str(path_length) + "/" + str(n)
+                if path_length > maximum_path_reached:
+                    print("Path length reached: " + str(path_length) + "/" + str(n))
+                    maximum_path_reached = path_length
                 F.append((g, p))
     return None
 
@@ -134,7 +137,7 @@ def get_full_cycles_from_graph(G):
     cycles = list(nx.simple_cycles(G))
     number_of_nodes = nx.number_of_nodes(G)
     if number_of_nodes != 0:
-        print "Number of nodes in cycle: %s" % number_of_nodes
+        print ("Number of nodes in cycle: %s" % number_of_nodes)
         full_cycles = filter(lambda cycle: len(cycle) == number_of_nodes, cycles)
         return full_cycles
     else:
@@ -145,7 +148,7 @@ def full_cycle_to_edges(full_cycle):
     # Iterate from first element to last minus one
     # Since we want grouping of two
     edges_in_full_cycle = []
-    for i in xrange(0, len(full_cycle) - 1):
+    for i in range(0, len(full_cycle) - 1):
         edges_in_full_cycle.append((full_cycle[i], full_cycle[i + 1]))
 
     # Link the first and last two nodes as well
@@ -157,7 +160,7 @@ def get_one_full_cycle(full_cycles):
     if full_cycles is not None and len(full_cycles) > 0:
         full_cycles = sample(full_cycles, len(full_cycles))
         full_cycle = full_cycles[0]
-        print "Full cycle found: %s" % full_cycle
+        print ("Full cycle found: %s" % full_cycle)
         return full_cycle
 
 

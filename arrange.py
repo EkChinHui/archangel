@@ -12,7 +12,7 @@ from random import shuffle
 # Constants
 GENDER_MALE = "Male"
 GENDER_FEMALE = "Female"
-GENDER_NONBINARY = "Non-binary"
+GENDER_NONBINARY = "I do not identify with either."
 GENDER_NOPREF = "No preference"
 
 
@@ -39,14 +39,13 @@ def get_house_from_player(player):
     elif player.floor >= 19 and player.floor <= 21:
         return "ponya"
     else:
-        raise ValueError('Floor provided (' + player.floor +
-                         ') for player ' + str(player) + ' is invalid!')
+        raise ValueError("Floor provided (" + str(player.floor) + ") for player " + str(player) + " is invalid!")
 
 
 def is_gender_pref_respected(player_being_checked, other_player):
     if player_being_checked.gender_pref == GENDER_NOPREF:
         # If they have no preference, always respected
-        print "Nopref"
+        print ("Nopref")
         return True
     else:
         # Otherwise check if the other_player gender is what is wanted
@@ -66,7 +65,7 @@ def is_there_edge_between_players(angel_player, mortal_player):
     players - check if they are of the same gender and return False (no edge)
     between them
     '''
-    print "Checking %s and %s" % (angel_player, mortal_player)
+    print ("Checking %s and %s" % (angel_player, mortal_player))
 
     # Check if gender choice is respected
     gender_pref_is_respected = are_gender_prefs_respected(
@@ -87,16 +86,17 @@ def is_there_edge_between_players(angel_player, mortal_player):
         players_are_from_same_house = get_house_from_player(
             angel_player) == get_house_from_player(mortal_player)
 
-    valid_pairing = not (players_are_from_same_faculty) and  gender_pref_is_respected and (not  players_are_from_same_house)# Remove same-house reqr -->  #or players_are_from_same_house) and
+    # Remove same-house reqr -->  #or players_are_from_same_house) and
+    valid_pairing = (not (players_are_from_same_faculty) and  gender_pref_is_respected and (not  players_are_from_same_house))
     if players_are_from_same_faculty:
-        print "players from same fac\n"
+        print ("players from same fac\n")
     #ignore this requirement
     if players_are_from_same_house:
-        print "players from same house\n"
+        print ("players from same house\n")
     if not gender_pref_is_respected:
-        print "gender pref not respected"
+        print ("gender pref not respected\n")
 
-    print "\n"
+    print ("\n")
 
     return valid_pairing
 
@@ -118,45 +118,42 @@ def angel_mortal_arrange(player_list):
     Depending on the gender preferences to follow, run the edge-finding
     algorithm, generate a graph and find a Hamiltonian circuit.
     '''
-    print "Arranging player list: %s" % player_list
+    print ("Arranging player list: %s" % player_list)
     # Convert the list of players into a list of valid edges
     player_edges = get_player_edges_from_player_list(player_list)
     # Generate the overall graph from all edges
     overall_graph = get_graph_from_edges(player_edges)
-    print "Number of nodes in overall graph: " + str(overall_graph.number_of_nodes())
+    print ("Number of nodes in overall graph: " + str(overall_graph.number_of_nodes()))
     # Find all connected components and find cycles for all
     graphs = list(nx.strongly_connected_component_subgraphs(overall_graph))
 
-    print "\nConnected components detected: %s" % len(graphs)
+    print ("\nConnected components detected: %s" % len(graphs))
 
-    print "Printing original player list: "
+    print ("Printing original player list: ")
     for player in player_list:
-        print player
+        print (player)
 
-    print "\n\n"
+    print ("\n\n")
 
     
-    print "Player list size: " + str(len(player_list))
+    print ("Player list size: " + str(len(player_list)))
 
     list_of_player_chains = []
 
-    #for G in graphs:
-     #   draw_graph(G)
-
     for G in graphs:
 
-        print "Printing players in current graph:"
+        print ("Printing players in current graph:")
         for graph_player in G.nodes():
-            print graph_player
+            print (graph_player)
         
         # Draw this intermediate graph
-        print "Number of nodes in graph: " + str(G.number_of_nodes())
+        print ("Number of nodes in graph: " + str(G.number_of_nodes()))
         if DISPLAY_GRAPH:
             draw_graph(G)
 
         # Find out if there is DEFINITELY no hamiltonian cycle
         is_there_full_cycle = is_there_definitely_no_hamiltonian_cycle(G)
-        print "Is there DEFINITELY no full cycle? - %s" % is_there_full_cycle
+        print ("Is there DEFINITELY no full cycle? - %s" % is_there_full_cycle)
         # Sleep for a few seconds
         time.sleep(2)
         '''
@@ -166,13 +163,13 @@ def angel_mortal_arrange(player_list):
         full_cycle = get_one_full_cycle(full_cycles)
         '''
         full_cycle = hamilton(G) #get_one_full_cycle_from_graph(G)
-        #full_cycle = get_hamiltonian_path_from_graph(G)
+        # full_cycle = get_hamiltonian_path_from_graph(G)
         # Draw the full cycle if it exists
         if full_cycle is not None:
             G_with_full_cycle = convert_full_cycle_to_graph(full_cycle)
             draw_graph(G_with_full_cycle)
             list_of_player_chains.append(full_cycle)
         else:
-            print "There is no full cycle - sorry! This means that the current set of players cannot form a perfect chain given the arrange requirements"
+            print ("There is no full cycle - sorry! This means that the current set of players cannot form a perfect chain given the arrange requirements")
 
     return list_of_player_chains

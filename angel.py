@@ -31,7 +31,7 @@ from models import Player
 from arrange import angel_mortal_arrange
 
 # GLOBALS
-PLAYERFILE = "playerlist.tsv"
+# PLAYERFILE = "C://Users//Exact//Path//To//Your//File//playerlist.tsv"
 
 # Constants
 GENDER_MALE = "Male"
