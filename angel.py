@@ -45,12 +45,13 @@ GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0
 def read_csv(filename):
     '''
     Reads a CSV file and outputs a list of Player objects
+    .decode('ascii', errors='ignore')
     '''
     person_list = []
-    with open(filename, 'rb') as f:
+    with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter="\t")
         for row in reader:
-            new_person = Player(name=row[1].decode('ascii', errors='ignore'),
+            new_person = Player(name=row[1],
                                 fbname=row[2],
                                 floor=row[3],
                                 room_number=row[4],
@@ -62,9 +63,9 @@ def read_csv(filename):
                                 interests=row[10])
             if new_person.is_valid():
                 person_list.append(new_person)
-                print "Adding " + str(new_person)
+                print ("Adding: " + str(new_person))
             else:
-                print "Invalid person during csv reading: " + str(row)
+                print ("Invalid person during csv reading: " + str(row))
     return person_list
 
 '''
@@ -80,7 +81,7 @@ def separate_players(player_list):
     female_female_list = []
 
     for player in player_list:
-        print "Player: %s, Gender: %s, GenderPref: %s" % (player, player.gender, player.gender_pref)
+        print ("Player: %s, Gender: %s, GenderPref: %s" % (player, player.gender, player.gender_pref))
         if (player.gender == 'Male' and player.gender_pref == 'Male') or (player.gender == "Non-binary" and player.gender_pref == "Male"):
             male_male_list.append(player)
         elif (player.gender == 'Female' and player.gender_pref == 'Female') or (player.gender == "Non-binary" and player.gender_pref == "Female"):
@@ -97,7 +98,7 @@ def write_to_csv(index, *player_lists):
     '''
     for player_list in player_lists:
         if player_list is not None:
-            print "Length of list: %s" % len(player_list)
+            print ("Length of list: %s" % len(player_list))
 
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
             f = open(str(index) + '-' + cur_time + ".csv", "w")
@@ -116,25 +117,33 @@ def modify_player_list(player_list):
                 if player.gender_pref == GENDER_NOPREF:
                         random_change_preference = random.random() < GENDER_SWAP_PREFERENCE_PERCENTAGE
                         if player.gender == GENDER_MALE and random_change_preference:
-                                print "Male -> Female"
+                                print ("Male -> Female")
                                 player.gender_pref = GENDER_FEMALE
                         elif player.gender == GENDER_FEMALE and random_change_preference:
-                                print "Female -> Male"
+                                print ("Female -> Male")
                                 player.gender_pref = GENDER_MALE
 
 if __name__ == "__main__":
-    print "\n\n"
-    print "============================================="
-    print "tAngel 2016 engine initializing.............."
-    print "============================================="
-    print "\n\n"
+    print ("\n\n")
+    print ("=============================================")
+    print ("tAngel 2016 engine initializing..............")
+    print ("=============================================")
+    print ("\n\n")
 
     # Get list of Player objects from csv file
     player_list = read_csv(PLAYERFILE)
+    print("Finished reading through player file.")
+    
     # Map the player list through any neccessary transformations
     modify_player_list(player_list)
+    print("Finished modifying player list.")
+
     # separate the players into player-chains (connected components)
     list_of_player_chains = angel_mortal_arrange(player_list)
+    print("Finished creating chains of players.")
+
     # Write each chain to a separate csv
     for index, player_chain in enumerate(list_of_player_chains):
         write_to_csv(index, player_chain)
+    print("Finished writing chains to csv files.")
+    
