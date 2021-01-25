@@ -12,37 +12,39 @@ from random import shuffle
 # Constants
 GENDER_MALE = "Male"
 GENDER_FEMALE = "Female"
-GENDER_NONBINARY = "I do not identify with either."
-GENDER_NOPREF = "No preference"
-
+GENDER_NONBINARY = "Non-Binary"
+GENDER_NOPREF = "No Preference"
 
 DISPLAY_GRAPH = True
 
 # Changing this value changes how much we care about the houses of players being the same
-# If 1 - we don't care, and house de-conflicting is ignored. 0 means we won't allow any players of the same house to be matched.
+# If 1 - we don't care, and house de-conflicting is ignored.
+# 0 means we won't allow any players of the same house to be matched.
 RELAX_SAME_HOUSE_REQUIREMENT_PERCENTAGE = 0.00
 
-RELAX_SAME_FACULTY_REQUIREMENT_PERCENTAGE = 0.00
+RELAX_SAME_FACULTY_REQUIREMENT_PERCENTAGE = 1.00
 
 
 def get_house_from_player(player):
     if player.floor == 3:
         return "prof"
-    elif player.floor >= 4 and player.floor <= 7:
+    elif 4 <= player.floor <= 7:
         return "shan"
-    elif player.floor >= 8 and player.floor <= 11:
+    elif 8 <= player.floor <= 11:
         return "ora"
-    elif player.floor >= 12 and player.floor <= 14:
+    elif 12 <= player.floor <= 14:
         return "gaja"
-    elif player.floor >= 15 and player.floor <= 18:
+    elif 15 <= player.floor <= 18:
         return "tancho"
-    elif player.floor >= 19 and player.floor <= 21:
+    elif 19 <= player.floor <= 21:
         return "ponya"
     else:
         raise ValueError("Floor provided (" + str(player.floor) + ") for player " + str(player) + " is invalid!")
 
 
 def is_gender_pref_respected(player_being_checked, other_player):
+    print(player_being_checked.name + ": " + player_being_checked.gender + ", " + player_being_checked.gender_pref)
+
     if player_being_checked.gender_pref == GENDER_NOPREF:
         # If they have no preference, always respected
         print ("Nopref")
@@ -55,7 +57,7 @@ def is_gender_pref_respected(player_being_checked, other_player):
 
 def are_gender_prefs_respected(angel_player, mortal_player):
     return is_gender_pref_respected(angel_player, mortal_player) and \
-        is_gender_pref_respected(mortal_player, angel_player)
+           is_gender_pref_respected(mortal_player, angel_player)
 
 
 def is_there_edge_between_players(angel_player, mortal_player):
@@ -87,10 +89,10 @@ def is_there_edge_between_players(angel_player, mortal_player):
             angel_player) == get_house_from_player(mortal_player)
 
     # Remove same-house reqr -->  #or players_are_from_same_house) and
-    valid_pairing = (not (players_are_from_same_faculty) and  gender_pref_is_respected and (not  players_are_from_same_house))
+    valid_pairing = not players_are_from_same_faculty and gender_pref_is_respected and (not players_are_from_same_house)
     if players_are_from_same_faculty:
         print ("players from same fac\n")
-    #ignore this requirement
+    # ignore this requirement
     if players_are_from_same_house:
         print ("players from same house\n")
     if not gender_pref_is_respected:

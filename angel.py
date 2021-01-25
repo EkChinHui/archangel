@@ -31,13 +31,13 @@ from models import Player
 from arrange import angel_mortal_arrange
 
 # GLOBALS
-# PLAYERFILE = "C://Users//Exact//Path//To//Your//File//playerlist.tsv"
+PLAYERFILE = "C:\\Users\\chinh\Desktop\\tAngels\\playerlist.tsv"
 
 # Constants
 GENDER_MALE = "Male"
 GENDER_FEMALE = "Female"
 GENDER_NONBINARY = "Non-binary"
-GENDER_NOPREF = "No preference"
+GENDER_NOPREF = "No Preference"
 
 GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0
 
@@ -52,15 +52,15 @@ def read_csv(filename):
         reader = csv.reader(f, delimiter="\t")
         for row in reader:
             new_person = Player(name=row[1],
-                                fbname=row[2],
-                                floor=row[3],
-                                room_number=row[4],
-                                contact_number=row[5],
+                                tele_handle=row[2],
+                                floor=row[3][0:2],
+                                room_number=row[3],
+                                faculty=row[4],
+                                gender_pref=row[5],
                                 gender=row[6],
-                                year=row[7],
-                                gender_pref=row[8],
-                                faculty=row[9],
-                                interests=row[10])
+                                prank_tol=row[7],
+                                likes=row[8],
+                                dislikes=row[9])
             if new_person.is_valid():
                 person_list.append(new_person)
                 print ("Adding: " + str(new_person))
@@ -71,31 +71,32 @@ def read_csv(filename):
 '''
 @unused
 '''
-def separate_players(player_list):
-    '''
-    Separates the list of player list into male_male, male_female, and
-    female_female gender preference lists
-    '''
-    male_male_list = []
-    male_female_list = []
-    female_female_list = []
 
-    for player in player_list:
-        print ("Player: %s, Gender: %s, GenderPref: %s" % (player, player.gender, player.gender_pref))
-        if (player.gender == 'Male' and player.gender_pref == 'Male') or (player.gender == "Non-binary" and player.gender_pref == "Male"):
-            male_male_list.append(player)
-        elif (player.gender == 'Female' and player.gender_pref == 'Female') or (player.gender == "Non-binary" and player.gender_pref == "Female"):
-            female_female_list.append(player)
-        else:
-            male_female_list.append(player)
-
-    return (male_male_list, male_female_list, female_female_list)
+# def separate_players(player_list):
+#     '''
+#     Separates the list of player list into male_male, male_female, and
+#     female_female gender preference lists
+#     '''
+#     male_male_list = []
+#     male_female_list = []
+#     female_female_list = []
+#
+#     for player in player_list:
+#         print ("Player: %s, Gender: %s, GenderPref: %s" % (player, player.gender, player.gender_pref))
+#         if (player.gender == 'Male' and player.gender_pref == 'Male') or (
+#                 player.gender == "Non-binary" and player.gender_pref == "Male"):
+#             male_male_list.append(player)
+#         elif (player.gender == 'Female' and player.gender_pref == 'Female') or (
+#                 player.gender == "Non-binary" and player.gender_pref == "Female"):
+#             female_female_list.append(player)
+#         else:
+#             male_female_list.append(player)
+#
+#     return male_male_list, male_female_list, female_female_list
 
 
 def write_to_csv(index, *player_lists):
-    '''
-    Writes a variable number of player lists to csv
-    '''
+    # Writes a variable number of player lists to csv
     for player_list in player_lists:
         if player_list is not None:
             print ("Length of list: %s" % len(player_list))
@@ -112,16 +113,17 @@ def write_to_csv(index, *player_lists):
 
 
 def modify_player_list(player_list):
-        # Force hetero mix
-        for player in player_list:
-                if player.gender_pref == GENDER_NOPREF:
-                        random_change_preference = random.random() < GENDER_SWAP_PREFERENCE_PERCENTAGE
-                        if player.gender == GENDER_MALE and random_change_preference:
-                                print ("Male -> Female")
-                                player.gender_pref = GENDER_FEMALE
-                        elif player.gender == GENDER_FEMALE and random_change_preference:
-                                print ("Female -> Male")
-                                player.gender_pref = GENDER_MALE
+    # Force hetero mix
+    for player in player_list:
+        if player.gender_pref == GENDER_NOPREF:
+            random_change_preference = random.random() < GENDER_SWAP_PREFERENCE_PERCENTAGE
+            if player.gender == GENDER_MALE and random_change_preference:
+                print ("Male -> Female")
+                player.gender_pref = GENDER_FEMALE
+            elif player.gender == GENDER_FEMALE and random_change_preference:
+                print ("Female -> Male")
+                player.gender_pref = GENDER_MALE
+
 
 if __name__ == "__main__":
     print ("\n\n")
@@ -133,8 +135,8 @@ if __name__ == "__main__":
     # Get list of Player objects from csv file
     player_list = read_csv(PLAYERFILE)
     print("Finished reading through player file.")
-    
-    # Map the player list through any neccessary transformations
+
+    # Map the player list through any necessary transformations
     modify_player_list(player_list)
     print("Finished modifying player list.")
 
@@ -146,4 +148,3 @@ if __name__ == "__main__":
     for index, player_chain in enumerate(list_of_player_chains):
         write_to_csv(index, player_chain)
     print("Finished writing chains to csv files.")
-    
